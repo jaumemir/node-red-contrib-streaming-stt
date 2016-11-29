@@ -5,6 +5,7 @@
     color: '#61A7FF',
     defaults: {
       name: {value:""},
+      model: {value:"es-ES_BroadbandModel"},      
       cmd: {value:""}
     },
     credentials: {
@@ -12,7 +13,7 @@
       password: {type:'password'}
     },
     inputs:1,
-    outputs:2,
+    outputs:3,
     icon: "mic.png",
     label: function() {
       return this.name||"streaming-stt";
@@ -40,6 +41,10 @@
      <label for="node-input-cmd"><i class="icon-tag"></i> Cmd</label>
      <input type="text" id="node-input-cmd" placeholder="optional">
  </div>
+  <div class="form-row">
+     <label for="node-input-model"><i class="icon-tag"></i> Model</label>
+     <input type="text" id="node-input-model" placeholder="optional">
+ </div>
 </script>
 
 <script type="text/x-red" data-help-name="streaming-stt">
@@ -53,6 +58,7 @@
     <li>STOPPING</li>
   </ul>
   </p>
+  <p>On the third output it sends the stream of audio recorded, so it can be saved into a file</p>
   <p>To start listening for voice and transcribe the node needs an input of <b>true</b> on <b>msg.payload</b>. Likewise if this property is set to <b>false</b> it will stop listening.</p>
   <p>Under Advanced you can configure a custom command that would be responsible for delivering an audio stream for IBM Bluemix Watson. Be sure what you are doing or you might crash the node.</p>
   <p>To configure the node you will have to sign up for a <a href='http://www.ibm.com/cloud-computing/bluemix/' target='_new'>IBM Bluemix account</a>. Then enable the service for speech-to-text to receive the required credentials.</p>
