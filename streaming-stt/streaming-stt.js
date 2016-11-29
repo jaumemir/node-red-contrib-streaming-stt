@@ -11,6 +11,7 @@ module.exports = function(RED) {
 
     var username = this.credentials.username;
     var password = this.credentials.password;
+    this.model = config.model;
 
     var micOption = {};
     micOption.command = node.cmd;
@@ -64,32 +65,36 @@ module.exports = function(RED) {
           listening = true;
           node.status({fill:'yellow',shape:'ring',text:'requesting'});
           voice = mic.startRecording();
-          watson = speech_to_text.createRecognizeStream({ content_type: 'audio/l16; rate=44100' });
+          watson = speech_to_text.createRecognizeStream({ content_type: 'audio/wav' , model: this.model });
 
           watson.on('results', function(data) {
             msg.payload = data;
-            node.send([msg,null]);
+            node.send([msg,null],null);
           }).on('listening',function(){
             node.status({fill:'green',shape:'ring',text:'listening'});
-            node.send([null,{payload:'LISTENING'}]);
+            node.send([null,{payload:'LISTENING'},null]);
           }).on('connect', function(){
             node.status({fill:'green',shape:'dot',text:'connected'});
-            node.send([null,{payload:'CONNECTED'}]);
+            node.send([null,{payload:'CONNECTED'},null]);
           }).on('close', function(reasonCode, description){
             listening = false;
             node.log('Closed with code '+reasonCode+', '+description);
             node.status({fill:'yellow',shape:'dot',text:'closed'});
-            node.send([null,{payload:'CLOSED'}]);
+            node.send([null,{payload:'CLOSED'},null]);
           }).on('error', function(err){
             listening = false;
             node.status({fill:'red',shape:'dot',text:'error'});
-            node.send([null,{payload:'ERROR'}]);
+            node.send([null,{payload:'ERROR'},null]);
           }).on('stopping', function(){
             listening = false;
             node.status({fill:'yellow',shape:'ring',text:'stopping'});
-            node.send([null,{payload:'STOPPING'}]);
+            node.send([null,{payload:'STOPPING'},null]);
           });
 
+       	  voice.on('data', (chunk) => {	
+  		      node.send([null, null, {payload:chunk}]);
+	        });
+          
           // pipe your recorded voice to watson sttws
           voice.pipe(watson);
         }
